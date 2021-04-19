@@ -1,3 +1,8 @@
+const MIN_VAL = 0.1;
+let num = 0;
+let wallet = 100;
+let amount;
+
 class Point {
     constructor(x, y) {
         this.x = x;
@@ -22,9 +27,6 @@ class Data {
     add = (item) => this.dataset.push(item);
     //TODO random add
 }
-
-
-
 
 //-- spostare in un file separato
 
@@ -52,11 +54,56 @@ var chart = new Chart(
     config
 );
 
+const buy = () => {
+    let newWallet = wallet - amount;
+    if (newWallet > 0) {
+        num++;
+        wallet = newWallet;
+    }
+    updateGUI();
+}
+
+const buyAll = () => {
+    let nn = Math.floor(wallet/amount);
+    if (nn > 0) {
+        num+=nn;
+        wallet -= (nn*amount)
+    }
+    updateGUI();
+}
+
+const sell = () => {  
+    if (num > 0) {
+        wallet += amount;
+        num--;
+    }
+    updateGUI();
+}
+
+const sellAll = () => {
+    if (num > 0) {
+       wallet += (amount*num) 
+       num = 0;
+    }
+    updateGUI();
+}
+
+const updateGUI = () => {
+    document.getElementById('num').value = num;
+    document.getElementById('wallet').value = wallet.toFixed(2);
+}
 
 function addPoint() {
     let point = datasets.last();
     let increment = mapRange(Math.random(), 0, 1, -1, 1);
-    let newPoint = new Point(point.x + 1, point.y + increment);
+    amount = point.y + increment;
+
+    if (amount <= 0) {
+        amount = MIN_VAL;
+    }
+
+    document.getElementById('amount').value = amount.toFixed(3);
+    let newPoint = new Point(point.x + 1, amount);
     datasets.add(newPoint);
     //TODO valuta come label
     chart.data.labels = datasets.labels();
